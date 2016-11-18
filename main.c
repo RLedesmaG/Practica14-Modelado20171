@@ -1,7 +1,4 @@
 #include "main.h"
-#include <stdio.h>
-#include <stdlib.h>
-#include <time.h>
 
 /*Función que inserta números aleatorios en una lista*/
 void inserta_datos_de_prueba(Lista lista);
@@ -62,15 +59,20 @@ int cmp_int(const void* a, const void* b){
 
 void ordena_lista(Lista lista, int(*cmp)(const void*, const void*)){
     int len = longitud(lista);
+    //el principio de la lista
     Elemento* it = *lista;
     int arreglo[len];
     for(int i=0;i<len;i++){
+        //ponemos en la posicion i del arreglo el valor del i-esimo elemento de la lista
         arreglo[i] = *(int *)it->valor;
+        //avanzamos
         it = it->siguiente;
     }
+    //se hace qsort con la función de comparación que sea
     qsort(arreglo, len, sizeof(int), (*cmp));
     it = *lista;
     for(int i=0;i<len;i++){
+        //se cambia el valor del i-esimo elemento de la lista por el i-esimo del arreglo ordenado
         *(int *)it->valor = arreglo[i];
         it = it->siguiente;
     }
@@ -79,8 +81,11 @@ void ordena_lista(Lista lista, int(*cmp)(const void*, const void*)){
 void borra_lista(Lista lista){
     Elemento* it = *lista;
     for(int i=0;i<longitud(lista);i++){
+        //aux es necesario, pues liberamos it antes de poder hacer it = it->siguiente
         Elemento* aux = it->siguiente;
+        //se libera el valor
         free(it->valor);
+        //se libera el elemento
         free(it);
         it = aux;
     }
@@ -94,10 +99,14 @@ Elemento *quita_elemento(Lista lista, size_t posicion){
         it = it->siguiente;
     }
         Elemento* aux1 = it->siguiente;
+        //el siguiente del siguiente, para poder saltarnoslo
         Elemento* aux2 = aux1->siguiente;
+        //se salta
         it->siguiente = aux2;
+        //ya que el elemento aux no es siguiente de nadie, no está en la lista. lo liberamos a el y su valor
         free(aux1->valor);
         free(aux1);
+        //se tiene que regresar un Elemento
         return NULL;
 }
 
@@ -112,14 +121,18 @@ void imprime_lista_int(Lista lista){
 }
 
 Lista crea_lista(){
+    //se reserva el espacio para la Lista
     Lista lista = malloc(sizeof(Lista));
     return lista;
 }
 
 int inserta_elemento(Lista lista, void *valor){
+    //se reserva el espacio del Elemento
     Elemento* nuevo = malloc(sizeof(Elemento));
+    //se inserta un elemento al inicio de la lista. Sólo se insertó al inicio por simplicidad, se pudo insertar tambien al final
     nuevo->siguiente = *lista;
     nuevo->valor = valor;
+    //el nuevo primer elemento de la lista es nuevo
     *lista = nuevo;
     return longitud(lista)+1;   
 }
@@ -128,7 +141,7 @@ size_t longitud(Lista lista){
     if(*lista == NULL)
         return 0;
 
-    int len = 1;
+    size_t len = 1;
     Elemento* cabeza = *lista;
     Elemento* it = cabeza->siguiente;
     while(it != NULL){
